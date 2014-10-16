@@ -3,4 +3,22 @@
 
 <project name="OmoDemo-portlet" basedir="." default="deploy">
 	<import file="../build-common-portlet.xml" />
+	<!– THE NEW TARGET IS THE FOLLOWING –>
+        <target name=”deploy-jenkins”>
+                <delete dir=”tempDist” />
+                <propertyfile file=”docroot/WEB-INF/liferay-plugin-package.properties”>
+                        <entry key=”module-incremental-version” type=”string” value=”${GIT_REVISION}” />
+                </propertyfile>
+                <ant target=”clean” inheritall=”false” />
+                <ant target=”deploy” inheritall=”false”/>
+                <path id=”warsPath”>
+                        <fileset dir=”../../dist”>
+                                <include name=”*${GIT_REVISION}.war” />
+                        </fileset>
+                </path>
+                <timestampselector property=”most.recent.war” pathref=”warsPath” count=”1? pathsep=”;” />
+                <echo message=”GOT ${most.recent.war}” />
+                <mkdir dir=”tempDist”/>
+                <copy file=”${most.recent.war}” todir=”tempDist”/>
+        </target>
 </project>
